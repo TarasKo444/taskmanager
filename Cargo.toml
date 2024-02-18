@@ -1,0 +1,12 @@
+[package]
+name = "taskmanager"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rocket = { version = "0.5.0", features = ["json"] }
+watch = "0.2.3"
+serde = "1.0.196"
+chrono = { version = "*", features = ["serde"] }
+uuid = { version = "1.7.0", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
+sqlx = {version = "*", features = ["postgres", "runtime-tokio-rustls", "chrono", "uuid", "time"]}

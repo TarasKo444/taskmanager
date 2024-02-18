@@ -1,27 +1,55 @@
-use chrono::Local;
+use chrono::{DateTime};
+use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::serde::Serialize;
+use serde::Deserialize;
 use uuid::Uuid;
+use crate::models::Task;
+use crate::*;
 
 #[derive(Serialize)]
-struct Response<'r> {
+pub struct Response {
     id: String,
-    title: &'r str,
-    description: &'r str,
+    title: String,
+    description: String,
     created_at: String,
 }
 
-#[get("/tasks")]
-pub async fn get_tasks() -> Json<Response<'static>> {
-    Json(Response {
-        id: Uuid::new_v4().to_string(),
-        title: "Test t",
-        description: "Test d",
-        created_at: Local::now().to_utc().to_string(),
-    })
+#[derive(Deserialize)]
+pub struct Request {
+    title: String,
+    description: String,
 }
 
-#[post("/tasks")]
-pub async fn create_task() -> Json<Response<'static>> {
+#[get("/tasks")]
+pub async fn get_tasks() -> Json<Vec<Response>> {
+    let pool = services::pool::get_pool().await;
+    let tasks = services::task::get_all(&pool).await.unwrap();
     
+    Json(tasks.iter().map(|t| {
+        Response {
+            id: t.id.to_string(),
+            title: t.title.to_string(),
+            description: t.description.to_string(),
+            created_at: t.created_at.format("%d/%m/%Y %H:%M").to_string()
+        }
+    }).collect::<Vec<Response>>())
+}
+
+#[post("/tasks", data = "<task>")]
+pub async fn create_task(task: Json<Request>) -> Status {
+    let new_task = Task {
+        id: Uuid::nil(),
+        created_at: DateTime::default(),
+        title: task.title.to_string(),
+        description: task.description.to_string()
+    };
+
+    let pool = services::pool::get_pool().await;
+    let response = services::task::create(new_task, &pool).await;
+    
+    match response {
+        Ok(_) => Status::Ok,
+        Err(_) => Status::InternalServerError
+    }
 }
