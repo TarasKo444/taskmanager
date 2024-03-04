@@ -1,4 +1,4 @@
-use rocket::futures::{TryStreamExt};
+use rocket::futures::TryStreamExt;
 use sqlx::{PgPool, Row};
 use sqlx::postgres::PgQueryResult;
 use crate::models::Task;

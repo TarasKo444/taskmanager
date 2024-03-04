@@ -5,8 +5,12 @@ edition = "2021"
 
 [dependencies]
 rocket = { version = "0.5.0", features = ["json"] }
-watch = "0.2.3"
 serde = "1.0.196"
 chrono = { version = "*", features = ["serde"] }
 uuid = { version = "1.7.0", features = ["v4", "fast-rng", "macro-diagnostics", "serde"] }
-sqlx = {version = "*", features = ["postgres", "runtime-tokio-rustls", "chrono", "uuid", "time"]}
+sqlx = { version = "*", features = ["runtime-tokio", "postgres", "chrono", "uuid", "time"] }
+dotenv = "0.15.0"
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }
+log = { version = "0.4.20" }
+env_logger = "0.11.2"
